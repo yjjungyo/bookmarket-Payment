@@ -8,6 +8,7 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,25 +26,14 @@ public class PolicyHandler{
 
         if(orderCanceled.isMe()){
             System.out.println("##### listener PayCancel : " + orderCanceled.toJson());
-            /*
-            Payment payment = new Payment();
-            payment.setOrderId(orderCanceled.getId());
-            payment.setCustomerId(orderCanceled.getCustomerId());
-            payment.setStatus("PayCanceled");
-            paymentRepository.save(payment);
-            */
-            Payment payment = null;
-            Iterable<Payment> paymentIterable = paymentRepository.findAll();
 
-            for (Payment pay : paymentIterable) {
-                if(orderCanceled.getId().equals(pay.getOrderId())) {
-                    payment = pay;
-                    break;
-                }
+            List<Payment> paymentList = paymentRepository.findByOrderId(orderCanceled.getId());
+            for(Payment payment : paymentList){
+                // view 객체에 이벤트의 eventDirectValue 를 set 함
+                payment.setStatus("PayCanceled");
+                // view 레파지 토리에 save
+                paymentRepository.save(payment);
             }
-            payment.setStatus(orderCanceled.getStatus());
-
-            paymentRepository.save(payment);
         }
     }
 
