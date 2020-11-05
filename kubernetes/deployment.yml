@@ -11,7 +11,7 @@ spec:
       app: payment  
   template:
     metadata:
-      labels:
+      labels:   
         app: payment
     spec:
       containers:
